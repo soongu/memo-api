@@ -1,1 +1,10 @@
-spring.application.name=memo-api
+spring:
+  profiles:
+    active: dev
+
+# actuator setting
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
