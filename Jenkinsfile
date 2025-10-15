@@ -14,14 +14,6 @@ pipeline {
                 git credentialsId: 'github-credentials', url: 'https://github.com/soongu/memo-api.git', branch: 'main'
             }
         }
-    
-
-        stage('Build') {
-            steps {
-                echo "----- 2. Gradle로 프로젝트 빌드하기 -----"
-                sh './gradlew clean build'
-            }
-        }
 
         stage('Build & Push Image to ECR') {
             steps {
