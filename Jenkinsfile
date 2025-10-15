@@ -1,12 +1,10 @@
 pipeline {
     agent any
 
-    // 파이프라인 전체에서 사용할 변수를 정의합니다.
     environment {
-        AWS_ACCOUNT_ID = '423458036718'
+        AWS_ACCOUNT_ID     = '423458036718'
         AWS_DEFAULT_REGION = 'ap-northeast-2'
-        IMAGE_REPO_NAME = 'my-spring-app'
-        IMAGE_TAG = '' // 아래에서 동적으로 채워질 예정
+        IMAGE_REPO_NAME    = 'my-spring-app'
     }
 
     stages {
@@ -26,21 +24,21 @@ pipeline {
 
         stage('Build & Push Image to ECR') {
             steps {
-                echo "----- 3. Docker 이미지 빌드 및 ECR에 푸시 -----"
                 script {
-                    // Git 커밋 해시의 앞 7자리를 이미지 태그로 사용합니다. (버전 관리)
-                    def IMAGE_TAG = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                    echo "----- 3. Docker 이미지 빌드 및 ECR에 푸시 (Plugin 사용) -----"
+                    
+                    def imageTag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                    def ecrRepoUrl = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
 
-                    // withCredentials 블록 안에서만 AWS 자격증명을 사용할 수 있습니다.
-                    withCredentials([aws(credentialsId: 'aws-credentials')]) {
-                        // 1. ECR에 로그인합니다.
-                        sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com'
+                    // 1. ECR 플러그인을 사용하여 ECR 레지스트리에 로그인합니다.
+                    // 'aws-credentials' ID를 가진 자격 증명을 사용합니다.
+                    docker.withRegistry("https://"+ecrRepoUrl, 'aws-credentials') {
 
-                        // 2. Docker 이미지를 빌드합니다. (ARM Mac -> x86 EKS 호환 이미지)
-                        sh 'docker buildx build --platform linux/amd64 --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG} .'
+                        // 2. Docker Pipeline 플러그인을 사용하여 이미지를 빌드합니다.
+                        def customImage = docker.build("${IMAGE_REPO_NAME}:${imageTag}", "--platform linux/amd64 .")
 
-                        // 3. 빌드된 이미지를 ECR에 푸시합니다.
-                        sh 'docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}'
+                        // 3. ECR에 이미지를 푸시합니다.
+                        customImage.push()
                     }
                 }
             }
