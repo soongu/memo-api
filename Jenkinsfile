@@ -34,7 +34,7 @@ pipeline {
                     // withCredentials 블록 안에서만 AWS 자격증명을 사용할 수 있습니다.
                     withCredentials([aws(credentialsId: 'aws-credentials')]) {
                         // 1. ECR에 로그인합니다.
-                        sh '/usr/bin/aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com'
+                        sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com'
 
                         // 2. Docker 이미지를 빌드합니다. (ARM Mac -> x86 EKS 호환 이미지)
                         sh 'docker buildx build --platform linux/amd64 --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG} .'
