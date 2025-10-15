@@ -34,6 +34,7 @@ pipeline {
                     // 'aws-credentials' ID를 가진 자격 증명을 사용합니다.
                     docker.withRegistry("https://"+ecrRepoUrl, 'my-aws-key') {
 
+                        echo 'SUCCESS: aws-credentials를 성공적으로 찾았습니다!'
                         // 2. Docker Pipeline 플러그인을 사용하여 이미지를 빌드합니다.
                         def customImage = docker.build("${IMAGE_REPO_NAME}:${imageTag}", "--platform linux/amd64 .")
 
