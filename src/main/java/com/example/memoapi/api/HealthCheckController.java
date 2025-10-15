@@ -9,6 +9,6 @@ public class HealthCheckController {
 
     @GetMapping("/")
     public ResponseEntity<String> health() {
-        return ResponseEntity.ok("Hello World Kubernetes!!");
+        return ResponseEntity.ok("Hello World Kubernetes and Jenkins!!");
     }
 }
