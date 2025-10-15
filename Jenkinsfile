@@ -32,7 +32,7 @@ pipeline {
 
                     // 1. ECR 플러그인을 사용하여 ECR 레지스트리에 로그인합니다.
                     // 'aws-credentials' ID를 가진 자격 증명을 사용합니다.
-                    docker.withRegistry("https://"+ecrRepoUrl, 'aws-credentials') {
+                    docker.withRegistry("https://"+ecrRepoUrl, 'my-aws-key') {
 
                         // 2. Docker Pipeline 플러그인을 사용하여 이미지를 빌드합니다.
                         def customImage = docker.build("${IMAGE_REPO_NAME}:${imageTag}", "--platform linux/amd64 .")
