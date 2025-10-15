@@ -50,14 +50,14 @@ pipeline {
                         // 1. kubectl이 EKS 클러스터를 바라보도록 설정 업데이트 (필요 시)
                         sh "aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region ${AWS_DEFAULT_REGION}"
                         
-                        // 1. 배포할 이미지의 전체 URI를 변수에 저장합니다.
+                        // 2. 배포할 이미지의 전체 URI를 변수에 저장합니다.
                         def fullImageUrl = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${env.IMAGE_TAG}"
                         
-                        // 2. (핵심!) sed 명령어로 deployment.yml 파일의 이미지 주소를 동적으로 변경합니다.
+                        // 3. (핵심!) sed 명령어로 deployment.yml 파일의 이미지 주소를 동적으로 변경합니다.
                         // 'image:' 뒤에 오는 모든 문자열을 방금 빌드한 이미지 주소로 바꿔치기합니다.
-                        sh "sed -i 's|image:.*|image: ${fullImageUrl}|g' deployment.yaml"
+                        sh "sed -i 's|image:.*|image: ${fullImageUrl}|g' deployment.yml"
                         
-                        // 3. 이제 모든 설정 파일(Service, Deployment)을 apply 합니다.
+                        // 4. 이제 모든 설정 파일(Service, Deployment)을 apply 합니다.
                         // - 리소스가 없으면 새로 생성(Create)해주고,
                         // - 리소스가 이미 있으면 변경된 부분만 업데이트(Update)해줍니다.
                         sh "kubectl apply -f service.yml"
