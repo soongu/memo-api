@@ -14,6 +14,23 @@ pipeline {
                 git credentialsId: 'github-credentials', url: 'https://github.com/soongu/memo-api.git', branch: 'main'
             }
         }
+        stage('Ultimate Credentials Test') {
+            steps {
+                echo '----- 자격 증명 시스템 핵심 기능 테스트 시작 -----'
+                
+                // Docker 플러그인 없이, Jenkins의 가장 기본적인 withCredentials 기능을 사용합니다.
+                // 'test-secret' ID를 가진 Secret text 자격 증명을 찾아, 그 값을 MY_SECRET 변수에 담습니다.
+                withCredentials([string(credentialsId: 'my-aws-key', variable: 'MY_SECRET')]) {
+                    
+                    // 만약 이 블록 안으로 성공적으로 들어왔다면, 
+                    // Jenkins의 핵심 자격 증명 시스템은 정상이라는 의미입니다.
+                    echo 'SUCCESS: "test-secret" 자격 증명을 성공적으로 찾았습니다!'
+                    
+                    // 실제 비밀 값은 Jenkins가 로그에서 자동으로 마스킹(*****) 처리합니다.
+                    sh 'echo "The secret value is: $MY_SECRET"'
+                }
+            }
+        }
 
         stage('Build') {
             steps {
@@ -21,6 +38,9 @@ pipeline {
                 sh './gradlew clean build'
             }
         }
+
+        
+
 
         stage('Build & Push Image to ECR') {
             steps {
