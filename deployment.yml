@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memo-api-deployment
+spec:
+  replicas: 2 # 👈 시작부터 Pod를 2개 띄워봅니다.
+  selector:
+    matchLabels:
+      app: memo-api # 이 Deployment가 관리할 Pod를 찾는 꼬리표
+  template: # Pod를 어떻게 만들지에 대한 설계도 ('Pod 템플릿')
+    metadata:
+      labels:
+        app: memo-api # Pod에 붙여줄 꼬리표 (위 selector와 일치!)
+    spec:
+      containers:
+        - name: memo-api-container
+          image: 423458036718.dkr.ecr.ap-northeast-2.amazonaws.com/my-spring-app:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_URL # 컨테이너에 설정될 환경 변수 이름
+              valueFrom:
+                secretKeyRef:
+                  name: my-db-secret # 사용할 Secret의 이름
+                  key: DB_URL       # Secret 안에서 가져올 데이터의 Key
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: my-db-secret
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: my-db-secret
+                  key: DB_PASSWORD
