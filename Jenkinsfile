@@ -48,7 +48,7 @@ pipeline {
             steps {
                 echo "----- EKS 클러스터에 새로운 버전 배포 -----"
                 script {
-                    withCredentials([aws(credentialsId: 'my-aws-key')]) {
+                    withCredentials([aws(credentialsId: 'aws-credentials')]) {
                         // 1. kubectl이 EKS 클러스터를 바라보도록 설정 업데이트 (필요 시)
                         sh "aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region ${AWS_DEFAULT_REGION}"
                         
