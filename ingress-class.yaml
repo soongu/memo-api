@@ -1,0 +1,6 @@
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: alb # Ingress 리소스의 ingressClassName과 일치
+spec:
+  controller: ingress.k8s.aws/alb # AWS Load Balancer Controller를 지정
