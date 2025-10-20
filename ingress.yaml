@@ -6,14 +6,14 @@ metadata:
     # --- 핵심 어노테이션 ---
     alb.ingress.kubernetes.io/scheme: internet-facing
     # 👇 2강에서 발급받은 ACM 인증서의 ARN을 정확히 입력하세요!
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:423458036718:certificate/6ca072ac-86b1-42dc-8455-5092070a3ada
+    alb.ingress.kubernetes.io/certificate-arn: 'arn:aws:acm:ap-northeast-2:423458036718:certificate/03374b79-bffe-4046-9468-c32d5d6abe8f'
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
     alb.ingress.kubernetes.io/ssl-redirect: '443'
 spec:
   ingressClassName: alb
   rules:
   # 👇 Route 53에 등록한 (또는 등록할) 도메인 이름을 입력하세요.
-  - host: api.it-cher.com
+  - host: api.gondue.co.kr
     http:
       paths:
       - path: / # 모든 경로(/) 요청을 처리

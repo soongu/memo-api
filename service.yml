@@ -4,7 +4,7 @@ metadata:
   name: memo-api-service
 spec:
   # 👇 type이 LoadBalancer로 되어 있는지 확인
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: memo-api
   ports:
